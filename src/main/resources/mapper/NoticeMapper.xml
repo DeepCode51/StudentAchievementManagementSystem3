@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.demo.dao.NoticeMapper">
+
+    <resultMap id="BaseResultMap" type="com.demo.vo.Notice" >
+            <result column="id" property="id" />
+            <result column="notice_name" property="noticeName" />
+            <result column="notice_text" property="noticeText" />
+            <result column="notice_type" property="noticeType" />
+            <result column="create_date" property="createDate" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        `id`,`notice_name`,`notice_text`,`notice_type`,`create_date`
+    </sql>
+
+    <!--新增-->
+    <insert id="doCreate" useGeneratedKeys="true" keyColumn="id" keyProperty="id" parameterType="com.demo.vo.Notice">
+        INSERT INTO `t_notice`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                    <if test ='id != null'>`id`,</if>
+                    <if test ='noticeName != null'>`notice_name`,</if>
+                    <if test ='noticeText != null'>`notice_text`,</if>
+                    <if test ='noticeType != null'>`notice_type`,</if>
+                    <if test ='createDate != null'>`create_date`</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+                    <if test ='id != null'>#{id},</if>
+                    <if test ='noticeName != null'>#{noticeName},</if>
+                    <if test ='noticeText != null'>#{noticeText},</if>
+                    <if test ='noticeType != null'>#{noticeType},</if>
+                    <if test ='createDate != null'>#{createDate}</if>
+        </trim>
+    </insert>
+
+    <!--批量删除-->
+    <delete id="doRemoveBatch" parameterType="java.util.Collection">
+        DELETE FROM `t_notice` WHERE `id` IN
+        <foreach collection="list" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--修改-->
+    <update id="doUpdate" parameterType="com.demo.vo.Notice">
+        UPDATE `t_notice`
+        <set>
+                <if test ='id != null'>`id` = #{id},</if>
+                <if test ='noticeName != null'>`notice_name` = #{noticeName},</if>
+                <if test ='noticeText != null'>`notice_text` = #{noticeText},</if>
+                <if test ='noticeType != null'>`notice_type` = #{noticeType},</if>
+                <if test ='createDate != null'>`create_date` = #{createDate}</if>
+        </set>
+        WHERE `id` = #{id}
+    </update>
+
+    <!--获取-->
+    <select id="findById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" /> FROM `t_notice` WHERE `id` = #{id}
+    </select>
+
+    <!--列表-->
+    <select id="findAllSplit" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" /> FROM `t_notice`
+        <where>
+            <if test="searchColumn != null and searchColumn != '' and keyword != null and keyword != ''">
+                ${searchColumn} LIKE CONCAT('%',#{keyword},'%')  AND
+            </if>
+            1=1
+        </where>
+        ORDER BY id ASC
+        <if test="startIndex != null and pageSize != null">
+            LIMIT #{startIndex},#{pageSize};
+        </if>
+    </select>
+    <!--数量-->
+    <select id="getAllCount" parameterType="java.util.Map" resultType="Integer">
+        SELECT COUNT(*) FROM `t_notice`
+        <where>
+            <if test="searchColumn != null and searchColumn != '' and keyword != null and keyword != ''">
+                ${searchColumn} LIKE CONCAT('%',#{keyword},'%')  AND
+            </if>
+            1=1
+        </where>
+    </select>
+</mapper>

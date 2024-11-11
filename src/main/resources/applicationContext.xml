@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+    <!-- 配置数据源 -->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <!--数据库驱动 -->
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+        <!--连接数据库的url -->
+        <property name="url" value="jdbc:mysql://localhost:3306/graduation_206_score?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false&amp;serverTimezone=Asia/Shanghai&amp;autoReconnect=true&amp;failOverReadOnly=false&amp;allowPublicKeyRetrieval=true"></property>
+        <!--连接数据库的用户名 -->
+        <property name="username" value="root"></property>
+        <!--连接数据库的密码 -->
+        <property name="password" value="123456"></property>
+    </bean>
+    <!-- 配置MyBatis工厂SqlSessionFactory -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--注入数据源 -->
+        <property name="dataSource" ref="dataSource"/>
+        <!--指定核MyBatis心配置文件位置 -->
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <!--xml文件的路径配置-->
+        <property name="mapperLocations">
+            <list>
+                <value>classpath:mapper/*.xml</value>
+            </list>
+        </property>
+    </bean>
+    <!-- 配置mapper扫描器 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.demo.dao"/>
+    </bean>
+</beans>

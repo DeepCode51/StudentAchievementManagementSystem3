@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.demo.dao.ScoreMapper">
+
+    <resultMap id="BaseResultMap" type="com.demo.vo.Score" >
+            <result column="id" property="id" />
+            <result column="score_name" property="scoreName" />
+            <result column="score_sex" property="scoreSex" />
+            <result column="score_class" property="scoreClass" />
+            <result column="score_subject" property="scoreSubject" />
+            <result column="score_teacher" property="scoreTeacher" />
+            <result column="score_score" property="scoreScore" />
+            <result column="score_text" property="scoreText" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        `id`,`score_name`,`score_sex`,`score_class`,`score_subject`,`score_teacher`,`score_score`,`score_text`
+    </sql>
+
+    <!--新增-->
+    <insert id="doCreate" useGeneratedKeys="true" keyColumn="id" keyProperty="id" parameterType="com.demo.vo.Score">
+        INSERT INTO `t_score`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                    <if test ='id != null'>`id`,</if>
+                    <if test ='scoreName != null'>`score_name`,</if>
+                    <if test ='scoreSex != null'>`score_sex`,</if>
+                    <if test ='scoreClass != null'>`score_class`,</if>
+                    <if test ='scoreSubject != null'>`score_subject`,</if>
+                    <if test ='scoreTeacher != null'>`score_teacher`,</if>
+                    <if test ='scoreScore != null'>`score_score`,</if>
+                    <if test ='scoreText != null'>`score_text`</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+                    <if test ='id != null'>#{id},</if>
+                    <if test ='scoreName != null'>#{scoreName},</if>
+                    <if test ='scoreSex != null'>#{scoreSex},</if>
+                    <if test ='scoreClass != null'>#{scoreClass},</if>
+                    <if test ='scoreSubject != null'>#{scoreSubject},</if>
+                    <if test ='scoreTeacher != null'>#{scoreTeacher},</if>
+                    <if test ='scoreScore != null'>#{scoreScore},</if>
+                    <if test ='scoreText != null'>#{scoreText}</if>
+        </trim>
+    </insert>
+
+    <!--批量删除-->
+    <delete id="doRemoveBatch" parameterType="java.util.Collection">
+        DELETE FROM `t_score` WHERE `id` IN
+        <foreach collection="list" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--修改-->
+    <update id="doUpdate" parameterType="com.demo.vo.Score">
+        UPDATE `t_score`
+        <set>
+                <if test ='id != null'>`id` = #{id},</if>
+                <if test ='scoreName != null'>`score_name` = #{scoreName},</if>
+                <if test ='scoreSex != null'>`score_sex` = #{scoreSex},</if>
+                <if test ='scoreClass != null'>`score_class` = #{scoreClass},</if>
+                <if test ='scoreSubject != null'>`score_subject` = #{scoreSubject},</if>
+                <if test ='scoreTeacher != null'>`score_teacher` = #{scoreTeacher},</if>
+                <if test ='scoreScore != null'>`score_score` = #{scoreScore},</if>
+                <if test ='scoreText != null'>`score_text` = #{scoreText}</if>
+        </set>
+        WHERE `id` = #{id}
+    </update>
+
+    <!--获取-->
+    <select id="findById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" /> FROM `t_score` WHERE `id` = #{id}
+    </select>
+
+    <!--列表-->
+    <select id="findAllSplit" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" /> FROM `t_score`
+        <where>
+            <if test="searchColumn != null and searchColumn != '' and keyword != null and keyword != ''">
+                ${searchColumn} LIKE CONCAT('%',#{keyword},'%')  AND
+            </if>
+            1=1
+        </where>
+        ORDER BY id ASC
+        <if test="startIndex != null and pageSize != null">
+            LIMIT #{startIndex},#{pageSize};
+        </if>
+    </select>
+    <!--数量-->
+    <select id="getAllCount" parameterType="java.util.Map" resultType="Integer">
+        SELECT COUNT(*) FROM `t_score`
+        <where>
+            <if test="searchColumn != null and searchColumn != '' and keyword != null and keyword != ''">
+                ${searchColumn} LIKE CONCAT('%',#{keyword},'%')  AND
+            </if>
+            1=1
+        </where>
+    </select>
+</mapper>

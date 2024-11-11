@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.demo.dao.UserMapper">
+
+    <resultMap id="BaseResultMap" type="com.demo.vo.User" >
+            <result column="id" property="id" />
+            <result column="username" property="username" />
+            <result column="password" property="password" />
+            <result column="real_name" property="realName" />
+            <result column="user_sex" property="userSex" />
+            <result column="user_phone" property="userPhone" />
+            <result column="user_text" property="userText" />
+            <result column="user_type" property="userType" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        `id`,`username`,`password`,`real_name`,`user_sex`,`user_phone`,`user_text`,`user_type`
+    </sql>
+
+    <!--新增-->
+    <insert id="doCreate" useGeneratedKeys="true" keyColumn="id" keyProperty="id" parameterType="com.demo.vo.User">
+        INSERT INTO `t_user`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                    <if test ='id != null'>`id`,</if>
+                    <if test ='username != null'>`username`,</if>
+                    <if test ='password != null'>`password`,</if>
+                    <if test ='realName != null'>`real_name`,</if>
+                    <if test ='userSex != null'>`user_sex`,</if>
+                    <if test ='userPhone != null'>`user_phone`,</if>
+                    <if test ='userText != null'>`user_text`,</if>
+                    <if test ='userType != null'>`user_type`</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+                    <if test ='id != null'>#{id},</if>
+                    <if test ='username != null'>#{username},</if>
+                    <if test ='password != null'>#{password},</if>
+                    <if test ='realName != null'>#{realName},</if>
+                    <if test ='userSex != null'>#{userSex},</if>
+                    <if test ='userPhone != null'>#{userPhone},</if>
+                    <if test ='userText != null'>#{userText},</if>
+                    <if test ='userType != null'>#{userType}</if>
+        </trim>
+    </insert>
+
+    <!--批量删除-->
+    <delete id="doRemoveBatch" parameterType="java.util.Collection">
+        DELETE FROM `t_user` WHERE `id` IN
+        <foreach collection="list" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--修改-->
+    <update id="doUpdate" parameterType="com.demo.vo.User">
+        UPDATE `t_user`
+        <set>
+                <if test ='id != null'>`id` = #{id},</if>
+                <if test ='username != null'>`username` = #{username},</if>
+                <if test ='password != null'>`password` = #{password},</if>
+                <if test ='realName != null'>`real_name` = #{realName},</if>
+                <if test ='userSex != null'>`user_sex` = #{userSex},</if>
+                <if test ='userPhone != null'>`user_phone` = #{userPhone},</if>
+                <if test ='userText != null'>`user_text` = #{userText},</if>
+                <if test ='userType != null'>`user_type` = #{userType}</if>
+        </set>
+        WHERE `id` = #{id}
+    </update>
+
+    <!--获取-->
+    <select id="findById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" /> FROM `t_user` WHERE `id` = #{id}
+    </select>
+
+    <!--列表-->
+    <select id="findAllSplit" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" /> FROM `t_user`
+        <where>
+            <if test="searchColumn != null and searchColumn != '' and keyword != null and keyword != ''">
+                ${searchColumn} LIKE CONCAT('%',#{keyword},'%')  AND
+            </if>
+            1=1
+        </where>
+        ORDER BY id ASC
+        <if test="startIndex != null and pageSize != null">
+            LIMIT #{startIndex},#{pageSize};
+        </if>
+    </select>
+    <!--数量-->
+    <select id="getAllCount" parameterType="java.util.Map" resultType="Integer">
+        SELECT COUNT(*) FROM `t_user`
+        <where>
+            <if test="searchColumn != null and searchColumn != '' and keyword != null and keyword != ''">
+                ${searchColumn} LIKE CONCAT('%',#{keyword},'%')  AND
+            </if>
+            1=1
+        </where>
+    </select>
+</mapper>
